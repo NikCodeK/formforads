@@ -21,7 +21,8 @@ import {
   offers,
   phases,
   targetAudienceTypes,
-  targetUrls
+  targetUrls,
+  type VariantRow
 } from '@/lib/types';
 import {
   createEmptyLeadGenDraft,
