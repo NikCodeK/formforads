@@ -44,7 +44,6 @@ export default function LeadGenerationPage() {
       targetAudience: '',
       targetAudienceCode: '',
       leadGenForm: '',
-      leadGenFormId: '',
       country: COUNTRY,
       source: SOURCE,
       variants: resizeVariantList([], base.creatives * base.headlines * base.copys)
