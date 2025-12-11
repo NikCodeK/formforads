@@ -17,6 +17,7 @@ import {
 } from '@/lib/types';
 import { useLeadGenForms } from '@/lib/useLeadGenForms';
 import { useTargetAudiences } from '@/lib/useTargetAudiences';
+import { NumberField, ReadOnlyField, SelectControl } from '@/components/FormControls';
 
 const COUNTRY = 'DE';
 const SOURCE = 'li';
@@ -173,79 +174,5 @@ export default function AwarenessPage() {
 
       <CampaignSidebar formState={formState} onFormStateChange={(updates) => setFormState({ ...formState, ...updates })} />
     </div>
-  );
-}
-
-function SelectControl({
-  label,
-  value,
-  options,
-  onChange,
-  error
-}: {
-  label: string;
-  value: string;
-  options: string[];
-  onChange: (value: string) => void;
-  error?: string;
-}) {
-  return (
-    <label className="flex flex-col gap-2">
-      <span className="text-sm font-medium text-slate-700">{label}</span>
-      <select
-        className={`rounded-xl border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 ${
-          error ? 'border-rose-400' : 'border-slate-200'
-        }`}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      >
-        {options.map((option, index) => (
-          <option key={`${option}-${index}`} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-      {error && <span className="text-xs text-rose-500">{error}</span>}
-    </label>
-  );
-}
-
-function NumberField({
-  label,
-  value,
-  onChange,
-  error
-}: {
-  label: string;
-  value: number | null;
-  onChange: (value: string) => void;
-  error?: string;
-}) {
-  return (
-    <label className="flex flex-col gap-2">
-      <span className="text-sm font-medium text-slate-700">{label}</span>
-      <input
-        type="number"
-        className={`rounded-xl border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 ${
-          error ? 'border-rose-400' : 'border-slate-200'
-        }`}
-        value={value ?? ''}
-        onChange={(event) => onChange(event.target.value)}
-      />
-      {error && <span className="text-xs text-rose-500">{error}</span>}
-    </label>
-  );
-}
-
-function ReadOnlyField({ label, value }: { label: string; value: string }) {
-  return (
-    <label className="flex flex-col gap-2">
-      <span className="text-sm font-medium text-slate-700">{label}</span>
-      <input
-        className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-600"
-        value={value}
-        readOnly
-      />
-    </label>
   );
 }
