@@ -112,7 +112,7 @@ export default function CarouselAdsPage() {
             <SelectControl
               label="Target Audience"
               value={formState.targetAudience || ''}
-              options={targetAudienceTypes.map((item) => item.label)}
+              options={targetAudiences.map((item) => item.label)}
               onChange={(value) => handleSelectChange('targetAudience', value)}
             />
             <SelectControl
