@@ -869,6 +869,32 @@ function Modal({ open, onClose, children }: { open: boolean; onClose: () => void
   );
 }
 
+type BaseErrors = Partial<
+  Record<
+    | 'phase'
+    | 'format'
+    | 'target'
+    | 'offer'
+    | 'cta'
+    | 'targetAudience'
+    | 'targetAudienceType'
+    | 'leadGenForm'
+    | 'targetUrl'
+    | 'budget'
+    | 'creatives'
+    | 'headlines'
+    | 'copys'
+    | 'assetType',
+    string
+  >
+>;
+
+interface VariantFieldErrors {
+  headline?: string;
+  copy?: string;
+  assetUrl?: string;
+}
+
 interface ValidationResult {
   formErrors: BaseErrors;
   variantErrors: VariantFieldErrors[];
