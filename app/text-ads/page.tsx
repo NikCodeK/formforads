@@ -37,7 +37,6 @@ export default function TextAdsPage() {
     targetUrl: targetUrls[0] ?? '',
     leadGenForm: '',
     leadGenFormId: '',
-    leadGenFormId: '',
     country: COUNTRY,
     budget: 100,
     source: SOURCE,
