@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:leadgen": "node tests/leadgenFormsRequest.js"
   },
   "dependencies": {
     "next": "^15.0.5",

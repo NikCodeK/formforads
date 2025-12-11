@@ -42,19 +42,6 @@ export const campaignGoals: OptionWithCode[] = [
 export const offers = ['Videotraining', 'PDF LM', 'Webinar', 'Website', 'Blog', 'Termin', 'Video'];
 
 export const targetAudienceTypes: OptionWithCode[] = [
-  { label: 'Webinar_RT', code: '41313221' },
-  { label: 'ZG B - Update 280725', code: '40863286' },
-  { label: 'ZG D - Branchen-Test - JB', code: '40863320' },
-  { label: 'ZG D - Branchen-Test', code: '40839446' },
-  { label: 'ZG B - LeadGen Phase', code: '40868307' },
-  { label: 'Awareness - Gewinner ZG', code: '40809858' },
-  { label: 'ZG B - Update 170725', code: '40849047' },
-  { label: 'ZG_C StB DE 1-500MA', code: '40169700' },
-  { label: 'ZG B - JB CxO BR IT', code: '40753368' },
-  { label: '270625-AW-PA-B-JB', code: '40800929' },
-  { label: '270625-AW-PA', code: '40803891' },
-  { label: 'ZG A - TB KS DE BR IT', code: '40746720' },
-  { label: 'IT-Entscheider 20052025', code: '40737305' }
 ];
 
 export const targetAudienceCategory: OptionWithCode[] = [
@@ -64,10 +51,7 @@ export const targetAudienceCategory: OptionWithCode[] = [
   { label: 'Cold + Retargeting', code: 'CART' }
 ];
 
-export const leadGenForms: OptionWithCode[] = [
-  { label: 'lgf002', code: '13588364' },
-  { label: 'lgf003', code: '13591544' }
-];
+export const leadGenForms: OptionWithCode[] = [];
 
 export const mediaTypes: OptionWithCode[] = [
   { label: 'Image', code: 'i' },
