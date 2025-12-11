@@ -7,7 +7,7 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.push('/all-campaigns');
+    router.push('/lead-generation');
   }, [router]);
 
   return (

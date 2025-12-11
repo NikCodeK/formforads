@@ -130,6 +130,7 @@ export interface CampaignBuilderFormState {
   targetUrl: string;
   leadGenForm: string;
   leadGenFormId: string;
+  targetForAirtable?: string;
   leadGenFormDraft: LeadGenFormDraft;
   country: string;
   budget: number | null;

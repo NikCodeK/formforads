@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, ChangeEvent } from 'react';
 import { CampaignSidebar } from '@/components/CampaignSidebar';
 import { Section } from '@/components/Section';
 import type { CampaignBuilderFormState } from '@/lib/types';
@@ -18,6 +18,9 @@ import {
 } from '@/lib/types';
 import { useLeadGenForms } from '@/lib/useLeadGenForms';
 import { useTargetAudiences } from '@/lib/useTargetAudiences';
+import { createDefaultFormState, generateVariants, resizeVariantList } from '@/lib/campaign';
+import type { VariantRow } from '@/lib/types';
+import { NumberField, ReadOnlyField, SelectControl } from '@/components/FormControls';
 
 const COUNTRY = 'DE';
 const SOURCE = 'li';
@@ -25,22 +28,28 @@ const SOURCE = 'li';
 export default function MessageAdsPage() {
   const { forms: leadGenFormOptions } = useLeadGenForms();
   const { audiences: targetAudiences } = useTargetAudiences();
-  const [formState, setFormState] = useState<Partial<CampaignBuilderFormState>>({
-    phase: 'Message Ads',
-    format: 'Message Ad',
-    target: campaignGoals[0]?.label ?? '',
-    offer: offers[0] ?? '',
-    cta: adCtas[0] ?? '',
-    targetAudience: '',
-    targetAudienceCode: '',
-    targetAudienceType: targetAudienceCategory[0]?.label ?? '',
-    targetUrl: targetUrls[0] ?? '',
-    leadGenForm: '',
-    leadGenFormId: '',
-    country: COUNTRY,
-    budget: 100,
-    source: SOURCE,
-    assetType: mediaTypes[0]?.label ?? ''
+  const [formState, setFormState] = useState<CampaignBuilderFormState>(() => {
+    const base = createDefaultFormState();
+    return {
+      ...base,
+      phase: 'Message Ads',
+      format: 'Message Ad',
+      target: 'SPONSORED_INMAILS',
+      targetForAirtable: base.targetForAirtable,
+      offer: offers[0] ?? '',
+      cta: adCtas[0] ?? '',
+      targetAudience: '',
+      targetAudienceCode: '',
+      targetAudienceType: targetAudienceCategory[0]?.label ?? '',
+      targetUrl: targetUrls[0] ?? '',
+      leadGenForm: '',
+      leadGenFormId: '',
+      country: COUNTRY,
+      budget: 100,
+      source: SOURCE,
+      assetType: mediaTypes[0]?.label ?? '',
+      variants: resizeVariantList([], base.creatives * base.headlines * base.copys)
+    };
   });
 
   useEffect(() => {
@@ -74,6 +83,10 @@ export default function MessageAdsPage() {
       setFormState((prev) => ({ ...prev, targetAudience: value, targetAudienceCode: match?.code ?? '' }));
       return;
     }
+    if (field === 'targetForAirtable') {
+      setFormState((prev) => ({ ...prev, targetForAirtable: value }));
+      return;
+    }
     setFormState((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -85,18 +98,55 @@ export default function MessageAdsPage() {
     }));
   };
 
+  const handleNumberSelect = (field: 'creatives' | 'headlines' | 'copys', value: string) => {
+    const parsed = Number.parseInt(value, 10);
+    if (Number.isNaN(parsed) || parsed <= 0) {
+      return;
+    }
+    setFormState((prev) => {
+      const nextCounts = {
+        ...prev,
+        [field]: parsed
+      };
+      const total = nextCounts.creatives * nextCounts.headlines * nextCounts.copys;
+      return {
+        ...nextCounts,
+        variants: resizeVariantList(prev.variants, total)
+      };
+    });
+  };
+
+  const handleVariantFieldChange = (
+    index: number,
+    field: 'headline' | 'copy' | 'assetUrl',
+    value: string
+  ) => {
+    setFormState((prev) => {
+      const nextVariants = prev.variants.map((variant, variantIndex) =>
+        variantIndex === index ? { ...variant, [field]: value } : variant
+      );
+      return {
+        ...prev,
+        variants: nextVariants
+      };
+    });
+  };
+
+  const variants = useMemo<VariantRow[]>(() => generateVariants(formState), [formState]);
+
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10 lg:flex-row lg:items-start">
       <div className="flex-1 space-y-6">
-        <Section title="Message Ads Campaign" countLabel="">
+        <Section title="Message Ads Campaign" countLabel={`Variants: ${variants.length}`}>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <ReadOnlyField label="Phase" value={formState.phase || ''} />
             <ReadOnlyField label="Format" value={formState.format || ''} />
+            <ReadOnlyField label="Target (fixed)" value={formState.target} />
             <SelectControl
-              label="Target"
-              value={formState.target || ''}
+              label="Target for Airtable"
+              value={formState.targetForAirtable || ''}
               options={campaignGoals.map((item) => item.label)}
-              onChange={(value) => handleSelectChange('target', value)}
+              onChange={(value) => handleSelectChange('targetForAirtable', value)}
             />
             <SelectControl
               label="Offer"
@@ -142,12 +192,90 @@ export default function MessageAdsPage() {
             />
             <ReadOnlyField label="Source" value={formState.source || ''} />
             <SelectControl
+              label="#Creatives"
+              value={String(formState.creatives)}
+              options={numericOptions.map((item) => String(item))}
+              onChange={(value) => handleNumberSelect('creatives', value)}
+            />
+            <SelectControl
+              label="#Headlines"
+              value={String(formState.headlines)}
+              options={numericOptions.map((item) => String(item))}
+              onChange={(value) => handleNumberSelect('headlines', value)}
+            />
+            <SelectControl
+              label="#Copys"
+              value={String(formState.copys)}
+              options={numericOptions.map((item) => String(item))}
+              onChange={(value) => handleNumberSelect('copys', value)}
+            />
+            <SelectControl
               label="Asset Type"
               value={formState.assetType || ''}
               options={mediaTypes.map((item) => item.label)}
               onChange={(value) => handleSelectChange('assetType', value)}
             />
           </div>
+        </Section>
+        <Section
+          title="Variants Preview"
+          subtitle="Subject/Message/Image URN Kombinationen"
+          countLabel={`${variants.length} rows`}
+        >
+          {variants.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+              Passe die Counts an, um Varianten zu erzeugen.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {variants.map((variant, index) => {
+                const detail = formState.variants[index];
+                return (
+                  <article
+                    key={detail?.id ?? variant.variante}
+                    className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300"
+                  >
+                    <header className="mb-4 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">{variant.variante}</p>
+                        <p className="text-xs uppercase tracking-wide text-slate-500">
+                          {variant.phase} · {variant.format} · {variant.target}
+                        </p>
+                      </div>
+                      <p className="text-sm font-semibold text-slate-900">
+                        {variant.budget !== null
+                          ? variant.budget.toLocaleString('de-DE', { minimumFractionDigits: 2 }) + ' €'
+                          : '—'}
+                      </p>
+                    </header>
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                      <VariantEditableField
+                        label="Subject Line"
+                        value={detail?.headline ?? ''}
+                        placeholder="Subject line"
+                        onChange={(value) => handleVariantFieldChange(index, 'headline', value)}
+                      />
+                      <VariantEditableField
+                        label="Message Body"
+                        value={detail?.copy ?? ''}
+                        placeholder="Message text"
+                        onChange={(value) => handleVariantFieldChange(index, 'copy', value)}
+                      />
+                      <VariantEditableField
+                        label="Image"
+                        value={detail?.assetUrl ?? ''}
+                        placeholder="https://drive.google.com/..."
+                        onChange={(value) => handleVariantFieldChange(index, 'assetUrl', value)}
+                        multiline={false}
+                        type="url"
+                        toggleable
+                      />
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
         </Section>
       </div>
 
@@ -156,76 +284,60 @@ export default function MessageAdsPage() {
   );
 }
 
-function SelectControl({
+function VariantEditableField({
   label,
   value,
-  options,
   onChange,
-  error
+  placeholder,
+  multiline = true,
+  type = 'text',
+  toggleable = false
 }: {
   label: string;
   value: string;
-  options: string[];
   onChange: (value: string) => void;
-  error?: string;
-}) {
-  return (
-    <label className="flex flex-col gap-2">
-      <span className="text-sm font-medium text-slate-700">{label}</span>
-      <select
-        className={`rounded-xl border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 ${
-          error ? 'border-rose-400' : 'border-slate-200'
-        }`}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      >
-        {options.map((option, index) => (
-          <option key={`${option}-${index}`} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-      {error && <span className="text-xs text-rose-500">{error}</span>}
-    </label>
-  );
-}
+  placeholder?: string;
+    multiline?: boolean;
+    type?: string;
+    toggleable?: boolean;
+  }) {
+  const baseClass = `rounded-xl border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200`;
+    const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      onChange(event.target.value);
+    };
 
-function NumberField({
-  label,
-  value,
-  onChange,
-  error
-}: {
-  label: string;
-  value: number | null;
-  onChange: (value: string) => void;
-  error?: string;
-}) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-sm font-medium text-slate-700">{label}</span>
-      <input
-        type="number"
-        className={`rounded-xl border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 ${
-          error ? 'border-rose-400' : 'border-slate-200'
-        }`}
-        value={value ?? ''}
-        onChange={(event) => onChange(event.target.value)}
-      />
-      {error && <span className="text-xs text-rose-500">{error}</span>}
-    </label>
-  );
-}
-
-function ReadOnlyField({ label, value }: { label: string; value: string }) {
-  return (
-    <label className="flex flex-col gap-2">
-      <span className="text-sm font-medium text-slate-700">{label}</span>
-      <input
-        className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-600"
-        value={value}
-        readOnly
-      />
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm font-medium text-slate-700">{label}</span>
+        {toggleable ? (
+          <button
+            type="button"
+            onClick={() => onChange(value ? '' : 'https://')}
+            className={`text-xs font-semibold ${
+              value ? 'text-rose-600 hover:text-rose-700' : 'text-blue-600 hover:text-blue-700'
+            }`}
+          >
+            {value ? 'Deaktivieren' : 'Aktivieren'}
+          </button>
+        ) : null}
+      </div>
+      {multiline ? (
+        <textarea
+          className={`min-h-[80px] ${baseClass}`}
+          value={value}
+          placeholder={placeholder}
+          onChange={handleChange}
+        />
+      ) : (
+        <input
+          className={baseClass}
+          value={value}
+          placeholder={placeholder}
+          onChange={handleChange}
+          type={type}
+        />
+      )}
     </label>
   );
 }

@@ -74,6 +74,7 @@ export function createDefaultFormState(): CampaignBuilderFormState {
     targetUrl: targetUrls[0] ?? '',
     leadGenForm: defaultLeadGen?.label ?? '',
     leadGenFormId: defaultLeadGen?.code ?? '',
+    targetForAirtable: campaignGoals[0]?.label ?? '',
     leadGenFormDraft: defaultLeadGenDraft,
     country: COUNTRY,
     budget: 100,

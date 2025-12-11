@@ -190,6 +190,12 @@ export function CampaignSidebar({ formState: externalFormState, onFormStateChang
               <dt>Target</dt>
               <dd className="font-medium text-slate-900">{externalFormState?.target || '—'}</dd>
             </div>
+            {externalFormState?.targetForAirtable ? (
+              <div className="flex justify-between">
+                <dt>Target (Airtable)</dt>
+                <dd className="font-medium text-slate-900">{externalFormState.targetForAirtable}</dd>
+              </div>
+            ) : null}
             <div className="flex justify-between">
               <dt>Target Audience Type</dt>
               <dd className="font-medium text-slate-900">{externalFormState?.targetAudienceType || '—'}</dd>

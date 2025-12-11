@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const tabs = [
-  { name: 'All Campaigns (Old)', href: '/all-campaigns' },
   { name: 'Lead Generation', href: '/lead-generation' },
   { name: 'Message Ads', href: '/message-ads' },
   { name: 'Awareness', href: '/awareness' },
