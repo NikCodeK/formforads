@@ -32,7 +32,7 @@ import {
   validateLeadGenDraft,
   isValidUrl
 } from '@/lib/leadgen';
-import { createDefaultFormState, generateVariants, resizeVariantList, validateForm } from '@/lib/campaign';
+import { createDefaultFormState, resizeVariantList, validateForm } from '@/lib/campaign';
 import { Section } from '@/components/Section';
 import { NumberField, ReadOnlyField, SelectControl, TextField } from '@/components/FormControls';
 
