@@ -869,6 +869,12 @@ function Modal({ open, onClose, children }: { open: boolean; onClose: () => void
   );
 }
 
+interface ValidationResult {
+  formErrors: BaseErrors;
+  variantErrors: VariantFieldErrors[];
+  hasErrors: boolean;
+}
+
 function validateForm(formState: CampaignBuilderFormState): ValidationResult {
   const formErrors: BaseErrors = {};
 
