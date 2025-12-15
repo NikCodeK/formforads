@@ -1,6 +1,6 @@
 import type { CampaignBuilderFormState, LeadGenFormDraft } from './types';
 
-const DEFAULT_LEADGEN_WEBHOOK_URL = '/api/leadgen';
+const DEFAULT_LEADGEN_WEBHOOK_URL = 'https://cleverfunding.app.n8n.cloud/webhook-test/9b2b0503-c872-407f-8d53-e26a2a9232dd';
 const DEFAULT_LEADGEN_WEBHOOK_METHOD = 'POST';
 
 export const LEADGEN_WEBHOOK_URL = process.env.NEXT_PUBLIC_LEADGEN_WEBHOOK_URL ?? DEFAULT_LEADGEN_WEBHOOK_URL;
