@@ -12,7 +12,7 @@ import {
 } from '@/lib/leadgen';
 import { useLeadGenForms } from '@/lib/useLeadGenForms';
 
-const WEBHOOK_URL = 'https://cleverfunding.app.n8n.cloud/webhook-test/9b2b0503-c872-407f-8d53-e26a2a9232dd';
+const WEBHOOK_URL = 'https://cleverfunding.app.n8n.cloud/webhook/edaa879d-442a-4fcf-8fc1-dd9df5797efe';
 
 interface CampaignSidebarProps {
   formState?: Partial<CampaignBuilderFormState>;

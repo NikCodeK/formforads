@@ -1,6 +1,6 @@
 import type { CampaignBuilderFormState, LeadGenFormDraft } from './types';
 
-const DEFAULT_LEADGEN_WEBHOOK_URL = 'https://cleverfunding.app.n8n.cloud/webhook-test/9b2b0503-c872-407f-8d53-e26a2a9232dd';
+const DEFAULT_LEADGEN_WEBHOOK_URL = 'https://cleverfunding.app.n8n.cloud/webhook/edaa879d-442a-4fcf-8fc1-dd9df5797efe';
 const DEFAULT_LEADGEN_WEBHOOK_METHOD = 'POST';
 
 export const LEADGEN_WEBHOOK_URL = process.env.NEXT_PUBLIC_LEADGEN_WEBHOOK_URL ?? DEFAULT_LEADGEN_WEBHOOK_URL;
@@ -22,7 +22,7 @@ export const createEmptyLeadGenDraft = (): LeadGenFormDraft => ({
   detail: '',
   thankYouMessage: '',
   cta: LEADGEN_CTA_OPTIONS[0] ?? '',
-  targetLink: ''
+  targetLink: 'https://'
 });
 
 export function isValidUrl(value: string) {
